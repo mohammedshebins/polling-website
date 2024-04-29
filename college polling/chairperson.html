@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>chairpersonPolling</title>
+    <style>
+        /* Global styles */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        h1 {
+            text-align: center;
+            margin-top: 20px;
+        }
+        #candidates {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .candidate-card {
+            border: 1px solid #ccc;
+            padding: 20px;
+            margin: 10px;
+            width: 200px;
+            display: inline-block;
+            text-align: center;
+            cursor: pointer;
+            flex: 0 0 calc(40% - 20px); /* Two cards per row by default */
+        }
+        .candidate-img {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            margin-bottom: 10px;
+        }
+
+        /* Media query for larger screens */
+        @media screen and (min-width: 768px) {
+            .candidate-card {
+                flex: 0 0 calc(20% - 20px); /* Four cards per row on larger screens */
+            }
+        }
+
+        /* Overlay styles */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .overlay-content {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .overlay-content button {
+            padding: 10px 20px;
+            margin-top: 10px;
+            cursor: pointer;
+            background-color: #3498db;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+        }
+
+        #timer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>POLL NUMBER: <span id="poll-number">0</span></h1>
+    <div id="candidates">
+        <div class="candidate-card" onclick="showConfirmation('chairperson1')" id="candidate1">
+            <img class="candidate-img" src="/images/chair.jpg" alt="chairperson 1">
+            <h3 style="color: #3498db;">Ashmil Mohammed </h3>
+        </div>
+        <div class="candidate-card" onclick="showConfirmation('chairperson2')" id="candidate2">
+            <img class="candidate-img" src="/images/fist.jpg" alt="chairperson 2">
+            <h3 style="color: #2ecc71;">Mohammed Abdunnafih</h3>
+        </div>
+    </div>
+
+    <!-- Confirmation Overlay -->
+    <div id="confirmationOverlay" class="overlay">
+        <div class="overlay-content">
+            <p>Are you sure you want to vote for this candidate?</p>
+            <button onclick="confirmVote()">Confirm</button>
+            <button onclick="cancelVote()">Cancel</button>
+        </div>
+    </div>
+    <audio id="beep" src="beep.wav"></audio>
+    <div id="timer"></div>
+
+    <script>
+        var currentCandidate;
+        var voteNumber = 0;
+        var votingDisabled = false; // Flag to indicate whether voting is disabled
+
+        // Fetch total votes from localStorage and update the UI
+        var totalVotes = JSON.parse(localStorage.getItem('chairpersontotalvote')) || {};
+        var totalVotesCount = Object.values(totalVotes).reduce((total, current) => total + current, 0) + 1; // Add 1 here
+        document.getElementById('poll-number').textContent = totalVotesCount;
+
+        // Function to display confirmation overlay
+        function showConfirmation(candidate) {
+            if (!votingDisabled) {
+                currentCandidate = candidate;
+                var overlay = document.getElementById('confirmationOverlay');
+                overlay.style.display = 'flex';
+            }
+        }
+
+        // Function to confirm vote
+        function confirmVote() {
+            var votes = JSON.parse(localStorage.getItem('chairpersontotalvote')) || {};
+            votes[currentCandidate] = (votes[currentCandidate] || 0) + 1;
+            localStorage.setItem('chairpersontotalvote', JSON.stringify(votes));
+
+            var individualVotes = JSON.parse(localStorage.getItem('chairpersoncandidate' + currentCandidate)) || 0;
+            individualVotes++;
+            localStorage.setItem('chairpersoncandidate' + currentCandidate, individualVotes);
+
+            var totalVotesCount = Object.values(votes).reduce((total, current) => total + current, 0) + 1; // Add 1 here
+            document.getElementById('poll-number').textContent = totalVotesCount;
+
+            // Play beep sound for 5 seconds
+            var beep = document.getElementById("beep");
+            beep.play();
+            setTimeout(function() {
+                beep.pause();
+                beep.currentTime = 0;
+            }, 5000);
+
+            hideOverlay();
+            
+            // Disable voting for 20 seconds
+            votingDisabled = true;
+            setTimeout(function() {
+                votingDisabled = false;
+            }, 20000);
+
+            // Start countdown timer
+            startTimer();
+        }
+
+        // Function to cancel vote
+        function cancelVote() {
+            hideOverlay();
+        }
+
+        // Function to hide overlay
+        function hideOverlay() {
+            var overlay = document.getElementById('confirmationOverlay');
+            overlay.style.display = 'none';
+        }
+
+        // Function to start countdown timer
+        function startTimer() {
+            var timerElement = document.getElementById('timer');
+            var secondsLeft = 20;
+
+            var timer = setInterval(function() {
+                if (secondsLeft <= 0) {
+                    clearInterval(timer);
+                    timerElement.textContent = "";
+                } else {
+                    timerElement.textContent = "Next vote available in: " + secondsLeft + " seconds";
+                    secondsLeft--;
+                }
+            }, 1000);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Page - View Votes</title>
+    <style>
+        /* Global styles */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .bar-graph {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            height: 300px;
+            margin-top: 20px;
+        }
+        .bar {
+            width: 15%;
+            text-align: center;
+            color: white;
+            font-size: 14px;
+            position: relative;
+        }
+        .bar span {
+            display: block;
+            margin-top: 5px;
+        }
+        .total-votes {
+            text-align: center;
+            margin-top: 50px;
+        }
+        .percentage {
+            position: absolute;
+            bottom: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 12px;
+            color: black;
+            font-weight: 900;
+        }
+        .reset-button {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .reset-button button {
+            padding: 10px 20px;
+            cursor: pointer;
+            background-color: #e74c3c;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Admin Page - View Votes</h1>
+    <div>
+        <h1>TREASURY</h1>
+        <div class="bar-graph">
+            <div class="bar" id="candidatetreasury1-bar" style="background-color: #3498db;">
+                <span id="candidatetreasury1-votes">0</span>
+                <div class="percentage" id="candidatetreasury1-percentage">0%</div>
+            </div>
+            <div class="bar" id="candidatetreasury2-bar" style="background-color: #2ecc71;">
+                <span id="candidatetreasury2-votes">0</span>
+                <div class="percentage" id="candidatetreasury2-percentage">0%</div>
+            </div>
+            <div class="bar" id="ccandidatetreasury-bar" style="background-color: #9b59b6;">
+                <span id="candidatetreasury3-votes">0</span>
+                <div class="percentage" id="candidatetreasury3-percentage">0%</div>
+            </div>
+            <div class="bar" id="candidatetreasury4-bar" style="background-color: #e74c3c;">
+                <span id="candidatetreasury4-votes">0</span>
+                <div class="percentage" id="candidatetreasury4-percentage">0%</div>
+            </div>
+            <div class="bar" id="candidatetreasury5-bar" style="background-color: #cbbe00;">
+                <span id="candidatetreasury5-votes">0</span>
+                <div class="percentage" id="candidatetreasury5-percentage">0%</div>
+            </div>
+        </div>
+        <div class="total-votes" id="total-votes">
+            Total Votes: <span id="total-votes-count">0</span>
+        </div>
+        <div class="reset-button">
+            <button onclick="showResetConfirmation()">Reset Votes</button>
+        </div>
+    </div>
+
+    <script>
+        // JavaScript to fetch and display vote counts
+        function fetchVotes() {
+            // Retrieve the vote counts from local storage
+            var votes = JSON.parse(localStorage.getItem('votes')) || {};
+            var totalVotes = Object.values(votes).reduce((total, current) => total + current, 0);
+
+            // Update the vote counts and bar heights
+            for (var candidate in votes) {
+                if (votes.hasOwnProperty(candidate)) {
+                    var bar = document.getElementById(candidate + "-bar");
+                    var votesSpan = document.getElementById(candidate + "-votes");
+                    var percentageSpan = document.getElementById(candidate + "-percentage");
+                    if (bar && votesSpan && percentageSpan) {
+                        var percentage = (votes[candidate] / totalVotes) * 100;
+                        votesSpan.textContent = votes[candidate];
+                        percentageSpan.textContent = percentage.toFixed(2) + "%";
+                        bar.style.height = percentage + "%";
+                    }
+                }
+            }
+
+            // Update total votes count
+            document.getElementById("total-votes-count").textContent = totalVotes;
+        }
+
+        // Call fetchVotes() when the page loads
+        window.onload = fetchVotes;
+
+        // Function to reset votes with double confirmation
+        function showResetConfirmation() {
+            var confirmation = confirm("Are you sure you want to reset all votes?");
+            if (confirmation) {
+                var doubleConfirmation = confirm("This action will reset all votes permanently. Are you sure?");
+                if (doubleConfirmation) {
+                    resetVotes();
+                }
+            }
+        }
+
+        // Function to reset votes
+        function resetVotes() {
+            localStorage.removeItem('votes');
+            fetchVotes(); // Update the displayed votes
+            alert("Votes have been reset successfully.");
+        }
+    </script>
+</body>
+</html>

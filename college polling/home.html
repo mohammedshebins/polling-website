@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Polling Website</title>
+    <style>
+        /* Global styles */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        h1 {
+            text-align: center;
+            margin-top: 20px;
+        }
+        #pollings {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .polling-card {
+            border: 1px solid #ccc;
+            padding: 20px;
+            margin: 10px;
+            width: 200px;
+            display: inline-block;
+            text-align: center;
+            cursor: pointer;
+            flex: 0 0 calc(40% - 20px); /* Two cards per row by default */
+        }
+        .polling-img {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            margin-bottom: 10px;
+        }
+
+        /* Media query for larger screens */
+        @media screen and (min-width: 768px) {
+            .polling-card {
+                flex: 0 0 calc(20% - 20px); /* Four cards per row on larger screens */
+            }
+        }
+
+
+    </style>
+</head>
+<body>
+    <h1>BATCH UNION NOMINEES</h1>
+    <div id="pollings">
+        <div class="polling-card" onclick="redirectToPage('chairperson.html')">
+            <img class="polling-img" src="/images/farewell.jpg" alt="polling 1">
+            <h3>CHAIRPERSON</h3>
+        </div>
+        <div class="polling-card" onclick="redirectToPage('vice-chairperson.html')">
+            <img class="polling-img" src="/images/farewell.jpg" alt="polling 2">
+            <h3>VICE CHAIRPERSON</h3>
+        </div>
+        <div class="polling-card" onclick="redirectToPage('treasury.html')">
+            <img class="polling-img" src="/images/farewell.jpg" alt="polling 3">
+            <h3>TREASURY</h3>
+        </div>
+        <div class="polling-card" onclick="redirectToPage('generalcoordinator.html')">
+            <img class="polling-img" src="/images/farewell.jpg" alt="polling 4">
+            <h3>GENERAL COORDINATOR</h3>
+        </div>
+    </div>
+    <div style="text-align: center; margin-top: 50px;">
+    <a href="admin.html" style="text-decoration: none; color: black;">admin</a>
+</div>
+
+    <script>
+        function redirectToPage(pageUrl) {
+            window.location.href = pageUrl;
+        }
+    </script>
+</body>
+</html>
